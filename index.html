@@ -180,6 +180,37 @@ errorBtns[14].addEventListener('click', () => {
 });
 
 
+    // Step 3 - Try/Catch/Finally
+document.getElementById('calculate').addEventListener('click', (e) => {
+  e.preventDefault();
+  let output = document.querySelector('output');
+  
+  try {
+    let firstNum = document.querySelector('#first-num').value;
+    let secondNum = document.querySelector('#second-num').value;
+    let operator = document.querySelector('#operator').value;
+
+    if (firstNum === '' || secondNum === '') {
+      throw new Error('Both fields must be filled in!');
+    }
+
+    if (operator === '/' && secondNum === '0') {
+      throw new Error('Cannot divide by zero!');
+    }
+
+    let result = eval(`${firstNum} ${operator} ${secondNum}`);
+    output.innerHTML = result;
+    console.log('Calculation succeeded:', result);
+
+  } catch (e) {
+    console.error('Caught an error:', e.message);
+    output.innerHTML = 'Error: ' + e.message;
+  } finally {
+    console.log('Finally block: calculation attempt complete');
+  }
+});
+
+
     
   </script>
 </body>
