@@ -180,22 +180,25 @@ errorBtns[14].addEventListener('click', () => {
 });
 
 
-    // Step 3 - Try/Catch/Finally
-document.getElementById('calculate').addEventListener('click', (e) => {
+ document.getElementById('calculate').addEventListener('click', (e) => {
   e.preventDefault();
   let output = document.querySelector('output');
-  
+
   try {
     let firstNum = document.querySelector('#first-num').value;
     let secondNum = document.querySelector('#second-num').value;
     let operator = document.querySelector('#operator').value;
 
     if (firstNum === '' || secondNum === '') {
-      throw new Error('Both fields must be filled in!');
+      throw new ValidationError('Both fields must be filled in!', 'number-input');
+    }
+
+    if (isNaN(firstNum) || isNaN(secondNum)) {
+      throw new ValidationError('Inputs must be numbers!', 'number-input');
     }
 
     if (operator === '/' && secondNum === '0') {
-      throw new Error('Cannot divide by zero!');
+      throw new DivisionError('Cannot divide by zero!');
     }
 
     let result = eval(`${firstNum} ${operator} ${secondNum}`);
@@ -203,12 +206,38 @@ document.getElementById('calculate').addEventListener('click', (e) => {
     console.log('Calculation succeeded:', result);
 
   } catch (e) {
-    console.error('Caught an error:', e.message);
-    output.innerHTML = 'Error: ' + e.message;
+    if (e instanceof ValidationError) {
+      console.error(`${e.name} on field "${e.field}": ${e.message}`);
+      output.innerHTML = 'Validation Error: ' + e.message;
+    } else if (e instanceof DivisionError) {
+      console.error(`${e.name}: ${e.message}`);
+      output.innerHTML = 'Division Error: ' + e.message;
+    } else {
+      console.error('Unknown error:', e.message);
+      output.innerHTML = 'Error: ' + e.message;
+    }
   } finally {
     console.log('Finally block: calculation attempt complete');
   }
 });
+
+
+// Step 4 - Custom Error Class
+class ValidationError extends Error {
+  constructor(message, field) {
+    super(message);
+    this.name = 'ValidationError';
+    this.field = field;
+  }
+}
+
+class DivisionError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'DivisionError';
+  }
+}
+
 
 
     
