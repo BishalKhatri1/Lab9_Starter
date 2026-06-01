@@ -95,161 +95,142 @@
     </section>
   </main>
 
-  <script>
-    let form = document.querySelector('form');
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
-    });
 
-    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+<script>
+  // Step 4 - Custom Error Classes (must be defined FIRST)
+  class ValidationError extends Error {
+    constructor(message, field) {
+      super(message);
+      this.name = 'ValidationError';
+      this.field = field;
+    }
+  }
 
-    
-    
-    
-    // Step 2 - Console Buttons
-errorBtns[0].addEventListener('click', () => {
-  console.log('Console.log demo:', { name: 'Bishal', course: 'CSE110', year: 2026 });
-});
+  class DivisionError extends Error {
+    constructor(message) {
+      super(message);
+      this.name = 'DivisionError';
+    }
+  }
 
-errorBtns[1].addEventListener('click', () => {
-  console.error('Console.error demo: something went wrong!');
-});
+  // Step 5 - Global Error Handler (NO return true, so TrackJS can also catch it)
+  window.onerror = function(message, source, lineno, colno, error) {
+    console.log(`Global error caught: "${message}" at line ${lineno}`);
+    // do NOT return true here
+  };
 
-errorBtns[2].addEventListener('click', () => {
-  console.count('Button clicks');
-});
-
-errorBtns[3].addEventListener('click', () => {
-  console.warn('Console.warn demo: this is a warning!');
-});
-
-errorBtns[4].addEventListener('click', () => {
-  console.assert(1 === 2, 'Assert failed: 1 does not equal 2');
-});
-
-errorBtns[5].addEventListener('click', () => {
-  console.clear();
-});
-
-errorBtns[6].addEventListener('click', () => {
-  console.dir(document.body);
-});
-
-errorBtns[7].addEventListener('click', () => {
-  console.dirxml(document.body);
-});
-
-errorBtns[8].addEventListener('click', () => {
-  console.group('My Group');
-  console.log('Inside the group!');
-});
-
-errorBtns[9].addEventListener('click', () => {
-  console.groupEnd();
-});
-
-errorBtns[10].addEventListener('click', () => {
-  console.table([
-    { id: 1, name: 'Bishal', grade: 'A' },
-    { id: 2, name: 'Alice', grade: 'B' },
-    { id: 3, name: 'Bob',   grade: 'A+' }
-  ]);
-});
-
-errorBtns[11].addEventListener('click', () => {
-  console.time('myTimer');
-});
-
-errorBtns[12].addEventListener('click', () => {
-  console.timeEnd('myTimer');
-});
-
-errorBtns[13].addEventListener('click', () => {
-  function inner() { console.trace('Trace demo'); }
-  function outer() { inner(); }
-  outer();
-});
-
-// Step 5 - Global Error Handler (errorBtns[14] = "Trigger a Global Error")
-window.onerror = function(message, source, lineno, colno, error) {
-  console.log(`Global error caught: "${message}" at line ${lineno}`);
-  return true;
-};
-
-errorBtns[14].addEventListener('click', () => {
-  setTimeout(() => {
-    null.toString(); // clearly triggers a global TypeError
-  }, 0);
-});
-
-
- document.getElementById('calculate').addEventListener('click', (e) => {
-  e.preventDefault();
-  let output = document.querySelector('output');
-
-  try {
+  let form = document.querySelector('form');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    let output = document.querySelector('output');
     let firstNum = document.querySelector('#first-num').value;
     let secondNum = document.querySelector('#second-num').value;
     let operator = document.querySelector('#operator').value;
+    output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+  });
 
-    if (firstNum === '' || secondNum === '') {
-      throw new ValidationError('Both fields must be filled in!', 'number-input');
+  let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+
+  // Step 2 - Console Buttons
+  errorBtns[0].addEventListener('click', () => {
+    console.log('Console.log demo:', { name: 'Bishal', course: 'CSE110', year: 2026 });
+  });
+  errorBtns[1].addEventListener('click', () => {
+    console.error('Console.error demo: something went wrong!');
+  });
+  errorBtns[2].addEventListener('click', () => {
+    console.count('Button clicks');
+  });
+  errorBtns[3].addEventListener('click', () => {
+    console.warn('Console.warn demo: this is a warning!');
+  });
+  errorBtns[4].addEventListener('click', () => {
+    console.assert(1 === 2, 'Assert failed: 1 does not equal 2');
+  });
+  errorBtns[5].addEventListener('click', () => {
+    console.clear();
+  });
+  errorBtns[6].addEventListener('click', () => {
+    console.dir(document.body);
+  });
+  errorBtns[7].addEventListener('click', () => {
+    console.dirxml(document.body);
+  });
+  errorBtns[8].addEventListener('click', () => {
+    console.group('My Group');
+    console.log('Inside the group!');
+  });
+  errorBtns[9].addEventListener('click', () => {
+    console.groupEnd();
+  });
+  errorBtns[10].addEventListener('click', () => {
+    console.table([
+      { id: 1, name: 'Bishal', grade: 'A' },
+      { id: 2, name: 'Alice', grade: 'B' },
+      { id: 3, name: 'Bob',   grade: 'A+' }
+    ]);
+  });
+  errorBtns[11].addEventListener('click', () => {
+    console.time('myTimer');
+  });
+  errorBtns[12].addEventListener('click', () => {
+    console.timeEnd('myTimer');
+  });
+  errorBtns[13].addEventListener('click', () => {
+    function inner() { console.trace('Trace demo'); }
+    function outer() { inner(); }
+    outer();
+  });
+
+  // Step 5 - Trigger Global Error
+  errorBtns[14].addEventListener('click', () => {
+    setTimeout(() => {
+      null.toString(); // triggers global TypeError, caught by TrackJS
+    }, 0);
+  });
+
+  // Step 3 & 4 - Try/Catch with Custom Errors
+  document.getElementById('calculate').addEventListener('click', (e) => {
+    e.preventDefault();
+    let output = document.querySelector('output');
+
+    try {
+      let firstNum = document.querySelector('#first-num').value;
+      let secondNum = document.querySelector('#second-num').value;
+      let operator = document.querySelector('#operator').value;
+
+      if (firstNum === '' || secondNum === '') {
+        throw new ValidationError('Both fields must be filled in!', 'number-input');
+      }
+      if (isNaN(firstNum) || isNaN(secondNum)) {
+        throw new ValidationError('Inputs must be numbers!', 'number-input');
+      }
+      if (operator === '/' && secondNum === '0') {
+        throw new DivisionError('Cannot divide by zero!');
+      }
+
+      let result = eval(`${firstNum} ${operator} ${secondNum}`);
+      output.innerHTML = result;
+      console.log('Calculation succeeded:', result);
+
+    } catch (e) {
+      if (e instanceof ValidationError) {
+        console.error(`${e.name} on field "${e.field}": ${e.message}`);
+        output.innerHTML = 'Validation Error: ' + e.message;
+      } else if (e instanceof DivisionError) {
+        console.error(`${e.name}: ${e.message}`);
+        output.innerHTML = 'Division Error: ' + e.message;
+      } else {
+        console.error('Unknown error:', e.message);
+        output.innerHTML = 'Error: ' + e.message;
+      }
+    } finally {
+      console.log('Finally block: calculation attempt complete');
     }
+  });
+</script>
+  
 
-    if (isNaN(firstNum) || isNaN(secondNum)) {
-      throw new ValidationError('Inputs must be numbers!', 'number-input');
-    }
-
-    if (operator === '/' && secondNum === '0') {
-      throw new DivisionError('Cannot divide by zero!');
-    }
-
-    let result = eval(`${firstNum} ${operator} ${secondNum}`);
-    output.innerHTML = result;
-    console.log('Calculation succeeded:', result);
-
-  } catch (e) {
-    if (e instanceof ValidationError) {
-      console.error(`${e.name} on field "${e.field}": ${e.message}`);
-      output.innerHTML = 'Validation Error: ' + e.message;
-    } else if (e instanceof DivisionError) {
-      console.error(`${e.name}: ${e.message}`);
-      output.innerHTML = 'Division Error: ' + e.message;
-    } else {
-      console.error('Unknown error:', e.message);
-      output.innerHTML = 'Error: ' + e.message;
-    }
-  } finally {
-    console.log('Finally block: calculation attempt complete');
-  }
-});
-
-
-// Step 4 - Custom Error Class
-class ValidationError extends Error {
-  constructor(message, field) {
-    super(message);
-    this.name = 'ValidationError';
-    this.field = field;
-  }
-}
-
-class DivisionError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'DivisionError';
-  }
-}
-
-
-
-    
-  </script>
 </body>
 
 </html>
