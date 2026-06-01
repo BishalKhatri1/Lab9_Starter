@@ -175,7 +175,7 @@ window.onerror = function(message, source, lineno, colno, error) {
 
 errorBtns[14].addEventListener('click', () => {
   setTimeout(() => {
-    undefinedFunction(); // triggers global error outside try/catch
+    null.toString(); // clearly triggers a global TypeError
   }, 0);
 });
 
